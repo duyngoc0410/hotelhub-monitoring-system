@@ -1,7 +1,7 @@
 package com.hotelhub.backend.auth.controller;
 
-import com.hotelhub.backend.auth.dto.AuthResponse;
-import com.hotelhub.backend.auth.dto.RegisterRequest;
+import com.hotelhub.backend.auth.dto.reponse.AuthResponse;
+import com.hotelhub.backend.auth.dto.request.RegisterRequest;
 import com.hotelhub.backend.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

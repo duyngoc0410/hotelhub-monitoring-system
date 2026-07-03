@@ -1,4 +1,4 @@
-package com.hotelhub.backend.auth.dto;
+package com.hotelhub.backend.auth.dto.reponse;
 
 import lombok.Builder;
 import lombok.Getter;

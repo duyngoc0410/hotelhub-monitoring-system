@@ -1,7 +1,7 @@
 package com.hotelhub.backend.auth.service;
 
-import com.hotelhub.backend.auth.dto.AuthResponse;
-import com.hotelhub.backend.auth.dto.RegisterRequest;
+import com.hotelhub.backend.auth.dto.reponse.AuthResponse;
+import com.hotelhub.backend.auth.dto.request.RegisterRequest;
 import com.hotelhub.backend.user.entity.User;
 
 import com.hotelhub.backend.user.repository.UserRepository;
