@@ -25,8 +25,8 @@ public class AuthService {
                 .passwordHash(passwordEncoder.encode(registerRequest.getPassword()))
                 .fullName(registerRequest.getFullName())
                 .phoneNumber(registerRequest.getPhoneNumber())
-                .role("CUSTOMER")
-                .status("ACTIVE")
+//                .role(registerRequest.)
+//                .status("ACTIVE")
                 .build();
 
         // SAVE DATABASE
