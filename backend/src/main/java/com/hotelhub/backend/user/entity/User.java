@@ -27,10 +27,10 @@ public class User extends BaseEntity {
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
 
-    @Column(name = "email", nullable = false, length = 100)
+    @Column(name = "email", nullable = false,unique = true, length = 100)
     private String email;
 
-    @Column (name = "password_hash", nullable = false,unique = true, length = 255)
+    @Column (name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
     @Column(name = "phone_number", nullable = false, length = 15)
