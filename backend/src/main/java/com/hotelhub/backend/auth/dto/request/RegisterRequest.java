@@ -1,7 +1,6 @@
 package com.hotelhub.backend.auth.dto.request;
 
 import com.hotelhub.backend.common.constant.enums.Gender;
-import com.hotelhub.backend.role.entity.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

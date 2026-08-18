@@ -43,7 +43,7 @@ public class User extends BaseEntity {
     private String avatar;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column( length = 20)
     private Gender gender;
 
     @Enumerated(EnumType.STRING)
