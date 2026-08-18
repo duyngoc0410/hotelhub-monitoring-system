@@ -20,19 +20,51 @@ public class RoleSeeder {
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
 
-
     @Transactional
     public void seed() {
-        if (roleRepository.existsByName(RoleType.ADMIN)){
-           return;
-        }
-        Set<Permission> allPermissions =
-            new HashSet<>(permissionRepository.findAll());
-        Role admin = Role.builder()
-                .name(RoleType.ADMIN)
-                .permissions(allPermissions)
-                .build();
 
-        roleRepository.save(admin);
+        Set<Permission> allPermissions =
+                new HashSet<>(permissionRepository.findAll());
+
+        // ADMIN
+        if (!roleRepository.existsByName(RoleType.ADMIN)) {
+            Role admin = Role.builder()
+                    .name(RoleType.ADMIN)
+                    .description("System Administrator")
+                    .permissions(allPermissions)
+                    .build();
+
+            roleRepository.save(admin);
+        }
+
+        // OWNER
+        if (!roleRepository.existsByName(RoleType.OWNER)) {
+            Role owner = Role.builder()
+                    .name(RoleType.OWNER)
+                    .description("Hotel Owner")
+                    .build();
+
+            roleRepository.save(owner);
+        }
+
+        // STAFF
+        if (!roleRepository.existsByName(RoleType.STAFF)) {
+            Role staff = Role.builder()
+                    .name(RoleType.STAFF)
+                    .description("Hotel Staff")
+                    .build();
+
+            roleRepository.save(staff);
+        }
+
+        // CUSTOMER
+        if (!roleRepository.existsByName(RoleType.CUSTOMER)) {
+            Role customer = Role.builder()
+                    .name(RoleType.CUSTOMER)
+                    .description("Hotel Customer")
+                    .build();
+
+            roleRepository.save(customer);
+        }
     }
 }
