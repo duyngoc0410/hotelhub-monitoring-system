@@ -14,7 +14,7 @@ import lombok.*;
         name = "addresses",
         indexes = {
                 @Index(name = "idx_address_user", columnList = "user_id"),
-                @Index(name = "idx_address_hotel", columnList = "hotel_id"),
+//                @Index(name = "idx_address_hotel", columnList = "hotel_id"),
                 @Index(name = "idx_address_province", columnList = "province"),
                 @Index(name = "idx_address_district", columnList = "district")
         }
