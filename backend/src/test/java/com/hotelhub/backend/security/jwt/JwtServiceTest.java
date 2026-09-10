@@ -21,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.*;
         private UserDetails createTestUser() {
 
             return User.builder()
-                    .username("test@hotelhub.com")
-                    .password("123456")
-                    .roles("CUSTOMER")
+                    .username("admin@hotelhub.com")
+                    .password("admin123")
+                    .roles("ADMIN")
 
                     .build();
         }
