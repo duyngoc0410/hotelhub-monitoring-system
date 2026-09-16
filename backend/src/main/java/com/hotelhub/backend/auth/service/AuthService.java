@@ -1,7 +1,7 @@
 package com.hotelhub.backend.auth.service;
 
 import com.hotelhub.backend.auth.dto.reponse.AuthResponse;
-import com.hotelhub.backend.auth.dto.request.RegisterRequest;
+import com.hotelhub.backend.auth.dto.request.CustomerRegisterRequest;
 import com.hotelhub.backend.common.constant.enums.RoleType;
 import com.hotelhub.backend.common.constant.enums.UserStatus;
 import com.hotelhub.backend.role.entity.Role;
@@ -23,22 +23,22 @@ public class AuthService {
     private final RoleRepository roleRepository;
 
     @Transactional
-    public AuthResponse register(RegisterRequest registerRequest){
+    public AuthResponse register(CustomerRegisterRequest customerRegisterRequest){
         // Kiểm Tra Email
-        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+        if (userRepository.existsByEmail(customerRegisterRequest.getEmail())) {
             throw new RuntimeException("Email already in use");
         }
         // Kiểm Tra Phone
         if (userRepository.existsByPhoneNumber(
-                registerRequest.getPhoneNumber())) {
+                customerRegisterRequest.getPhoneNumber())) {
 
             throw new RuntimeException("Phone number already in use");
         }
         // Kiểm tra cccd
-        if (registerRequest.getCccdNumber() != null
-                && !registerRequest.getCccdNumber().isBlank()
+        if (customerRegisterRequest.getCccdNumber() != null
+                && !customerRegisterRequest.getCccdNumber().isBlank()
                 && userRepository.existsByCccdNumber(
-                registerRequest.getCccdNumber())) {
+                customerRegisterRequest.getCccdNumber())) {
 
             throw new RuntimeException("CCCD already in use");
         }
@@ -47,13 +47,13 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("CUSTOMER role not found"));
         // Tạo User
         User user = User.builder()
-                .email(registerRequest.getEmail())
-                .passwordHash(passwordEncoder.encode(registerRequest.getPassword()))
-                .fullName(registerRequest.getFullName())
-                .phoneNumber(registerRequest.getPhoneNumber())
-                .cccdNumber(registerRequest.getCccdNumber())
-                .gender(registerRequest.getGender())
-                .dateOfBirth(registerRequest.getDateOfBirth())
+                .email(customerRegisterRequest.getEmail())
+                .passwordHash(passwordEncoder.encode(customerRegisterRequest.getPassword()))
+                .fullName(customerRegisterRequest.getFullName())
+                .phoneNumber(customerRegisterRequest.getPhoneNumber())
+                .cccdNumber(customerRegisterRequest.getCccdNumber())
+                .gender(customerRegisterRequest.getGender())
+                .dateOfBirth(customerRegisterRequest.getDateOfBirth())
                 .userStatus(UserStatus.ACTIVE)
                 .role(customerRole)
                 .build();

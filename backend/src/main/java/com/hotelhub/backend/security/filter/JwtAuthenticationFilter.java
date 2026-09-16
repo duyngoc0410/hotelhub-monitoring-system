@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import com.hotelhub.backend.security.service.CustomUserDetailsService;
+import com.hotelhub.backend.security.custom.CustomUserDetailsService;
 
 import java.io.IOException;
 

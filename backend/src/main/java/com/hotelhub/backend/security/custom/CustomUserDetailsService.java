@@ -1,6 +1,5 @@
-package com.hotelhub.backend.security.service;
+package com.hotelhub.backend.security.custom;
 
-import com.hotelhub.backend.security.custom.CustomUserDetails;
 import com.hotelhub.backend.user.entity.User;
 import com.hotelhub.backend.user.repository.UserRepository;
 
@@ -27,6 +26,17 @@ public class CustomUserDetailsService implements UserDetailsService {
                         )
                 );
 
+        return new CustomUserDetails(user);
+    }
+
+    public UserDetails loadUserByCccd(String cccdNumber) {
+
+        User user = userRepository.findByCccdNumber(cccdNumber)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User not found with CCCD: " + cccdNumber
+                        )
+                );
         return new CustomUserDetails(user);
     }
 

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 
-public class RegisterRequest {
+public class CustomerRegisterRequest {
     @Email(message = "Invalid email")
     @NotBlank(message = "Email is required")
     private String email;
