@@ -6,7 +6,7 @@ import com.hotelhub.backend.permission.repository.PermissionRepository;
 import com.hotelhub.backend.role.entity.Role;
 import com.hotelhub.backend.role.repository.RoleRepository;
 import jakarta.transaction.Transactional;
-import lombok.NoArgsConstructor;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
