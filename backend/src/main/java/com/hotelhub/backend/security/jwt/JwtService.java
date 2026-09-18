@@ -1,5 +1,6 @@
 package com.hotelhub.backend.security.jwt;
 
+import com.hotelhub.backend.user.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -35,12 +36,36 @@ public class JwtService {
                 secret.getBytes(StandardCharsets.UTF_8)
         );
     }
-    public String generateAccessTonken(UserDetails userDetails){
-        Map<String, Objects> claims = new HashMap<>();
+    public String generateAccessToken(
+            User user,
+            String loginType
+    ) {
+
+        Map<String, Object> claims =
+                new HashMap<>();
+
+        claims.put("login_type", loginType);
+
+        claims.put(
+                "role",
+                user.getRole()
+                        .getName()
+                        .name()
+        );
+
+        String subject;
+
+        if ("CUSTOMER".equals(loginType)) {
+            subject = user.getEmail();
+        } else if ("MANAGEMENT".equals(loginType)) {
+            subject = user.getCccdNumber();
+        } else {
+            throw new IllegalArgumentException("Invalid login type");
+        }
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(
                         new Date(
@@ -55,9 +80,29 @@ public class JwtService {
                 .compact();
     }
 
-    public String generateRefreshToken(UserDetails userDetails){
+    public String generateRefreshToken(
+            User user,
+            String loginType
+    ) {
+
+        Map<String, Object> claims =
+                new HashMap<>();
+
+        claims.put("login_type", loginType);
+
+        String subject;
+
+        if ("CUSTOMER".equals(loginType)) {
+            subject = user.getEmail();
+        } else if ("MANAGEMENT".equals(loginType)) {
+            subject = user.getCccdNumber();
+        } else {
+            throw new IllegalArgumentException("Invalid login type");
+        }
+
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setClaims(claims)
+                .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(
                         new Date(
@@ -78,7 +123,12 @@ public class JwtService {
                 Claims::getSubject
         );
     }
-
+    public String extractLoginType(String token) {
+        return extractClaim(
+                token,
+                claims -> claims.get("login_type", String.class)
+        );
+    }
     public Date extractExpiration(String token) {
 
         return extractClaim(

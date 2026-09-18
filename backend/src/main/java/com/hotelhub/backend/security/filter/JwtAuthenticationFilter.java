@@ -29,40 +29,115 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        // 1. Lấy Authorization Header
+        final String authHeader =
+                request.getHeader("Authorization");
+
+        // 2. Không có Bearer Token
+        if (authHeader == null
+                || !authHeader.startsWith("Bearer ")) {
+
             filterChain.doFilter(request, response);
             return;
         }
-        final String jwt = authHeader.substring(7);
 
-        final String email = jwtService.extractUsername(jwt);
+        // 3. Lấy JWT, bỏ "Bearer "
+        final String jwt =
+                authHeader.substring(7);
 
+        try {
 
-        if (email != null
-                && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // TODO: Load UserDetails từ Database ở Step 4
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+            // 4. Lấy subject từ JWT
+            // CUSTOMER  -> email
+            // MANAGEMENT -> CCCD
+            final String username =
+                    jwtService.extractUsername(jwt);
 
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
-                authentication.setDetails(
-                        new WebAuthenticationDetailsSource()
-                                .buildDetails(request)
-                );
+            // 5. Lấy loại đăng nhập
+            final String loginType =
+                    jwtService.extractLoginType(jwt);
 
-                SecurityContextHolder
-                        .getContext()
-                        .setAuthentication(authentication);
+            // 6. Chỉ xác thực nếu SecurityContext chưa có Authentication
+            if (username != null
+                    && SecurityContextHolder
+                    .getContext()
+                    .getAuthentication() == null) {
+
+                UserDetails userDetails;
+
+                // 7. CUSTOMER LOGIN
+                if ("CUSTOMER".equals(loginType)) {
+
+                    userDetails =
+                            customUserDetailsService
+                                    .loadUserByUsername(username);
+
+                }
+
+                // 8. MANAGEMENT LOGIN
+                else if ("MANAGEMENT".equals(loginType)) {
+
+                    userDetails =
+                            customUserDetailsService
+                                    .loadUserByCccd(username);
+
+                }
+
+                // 9. Login type không hợp lệ
+                else {
+
+                    filterChain.doFilter(
+                            request,
+                            response
+                    );
+
+                    return;
+                }
+
+                // 10. Kiểm tra JWT hợp lệ
+                if (jwtService.isTokenValid(
+                        jwt,
+                        userDetails
+                )) {
+
+                    // 11. Tạo Authentication
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+
+                    // 12. Gắn thông tin request
+                    authentication.setDetails(
+                            new WebAuthenticationDetailsSource()
+                                    .buildDetails(request)
+                    );
+
+                    // 13. Đưa Authentication vào SecurityContext
+                    SecurityContextHolder
+                            .getContext()
+                            .setAuthentication(
+                                    authentication
+                            );
+                }
             }
+
+        } catch (Exception e) {
+
+            /*
+             * JWT lỗi / hết hạn / không hợp lệ.
+             *
+             * Hiện tại chỉ bỏ qua authentication
+             * và cho request đi tiếp.
+             *
+             * Exception Handler sẽ được hoàn thiện
+             * ở Step xử lý Authentication Exception.
+             */
         }
+
+        // 14. Tiếp tục Filter Chain
         filterChain.doFilter(request, response);
     }
-
 }

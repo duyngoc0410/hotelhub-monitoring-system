@@ -13,10 +13,11 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @EntityGraph(attributePaths = {"role", "role.permissions"})
     Optional<User> findByEmail(String email);
 
-    Optional<User> findByPhoneNumber(String phoneNumber);
 
+
+    @EntityGraph(attributePaths = {"role", "role.permissions"})
     Optional<User> findByCccdNumber(String cccdNumber);
-
+    Optional<User> findByPhoneNumber(String phoneNumber);
     boolean existsByEmail(String email);
 
     boolean existsByPhoneNumber(String phoneNumber);

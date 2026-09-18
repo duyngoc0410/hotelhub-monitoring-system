@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                         )
                 );
 
-        return new CustomUserDetails(user);
+        return new CustomUserDetails(user, user.getEmail());
     }
 
     public UserDetails loadUserByCccd(String cccdNumber) {
@@ -37,7 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                                 "User not found with CCCD: " + cccdNumber
                         )
                 );
-        return new CustomUserDetails(user);
+        return new CustomUserDetails(user, user.getCccdNumber());
     }
 
 /*
