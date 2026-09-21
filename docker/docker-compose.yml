@@ -1,17 +1,15 @@
-version: '3.9'
+version: "3.9"
 
 services:
-
   postgres:
     image: postgres:16
     container_name: hotelhub-postgres
-
     restart: always
 
     environment:
       POSTGRES_DB: hotelhub
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
+      POSTGRES_USER: hotelhub
+      POSTGRES_PASSWORD: duy123
 
     ports:
       - "5432:5432"
@@ -24,9 +22,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-
     container_name: hotelhub-pgadmin
-
     restart: always
 
     environment:
@@ -36,6 +32,9 @@ services:
     ports:
       - "5050:80"
 
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
     depends_on:
       - postgres
 
@@ -44,9 +43,7 @@ services:
 
   redis:
     image: redis:7-alpine
-
     container_name: hotelhub-redis
-
     restart: always
 
     ports:
@@ -57,6 +54,7 @@ services:
 
 volumes:
   postgres_data:
+  pgadmin_data:
 
 networks:
   hotelhub-network:
