@@ -1,14 +1,13 @@
 package com.hotelhub.backend.auth.controller;
 
+import com.hotelhub.backend.auth.dto.request.*;
 import com.hotelhub.backend.auth.dto.response.AuthResponse;
-import com.hotelhub.backend.auth.dto.request.CustomerLoginRequest;
-import com.hotelhub.backend.auth.dto.request.CustomerRegisterRequest;
-import com.hotelhub.backend.auth.dto.request.ManagementLoginRequest;
-import com.hotelhub.backend.auth.dto.request.OwnerRegisterRequest;
 import com.hotelhub.backend.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import com.hotelhub.backend.auth.dto.request.RefreshTokenRequest;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -37,4 +36,11 @@ public class AuthController {
     ) {
         return authService.managementLogin(request);
     }
+    @PostMapping("/refresh")
+    public AuthResponse refreshToken(
+            @Valid @RequestBody RefreshTokenRequest request
+    ) {
+        return authService.refreshToken(request);
+    }
+
 }
