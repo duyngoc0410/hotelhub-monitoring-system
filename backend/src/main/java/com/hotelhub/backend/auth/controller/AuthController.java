@@ -42,5 +42,12 @@ public class AuthController {
     ) {
         return authService.refreshToken(request);
     }
+    // Api Logout
+    @PostMapping("/logout")
+    public AuthResponse logout(
+            @Valid @RequestBody LogoutRequest request
+    ){
+        return authService.logout(request);
+    }
 
 }

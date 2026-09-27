@@ -12,6 +12,7 @@ import com.hotelhub.backend.security.jwt.JwtService;
 import com.hotelhub.backend.user.entity.User;
 
 import com.hotelhub.backend.user.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -302,5 +303,23 @@ public class AuthService {
                 .build();
 
     }
+    @Transactional
+    public AuthResponse logout(@Valid LogoutRequest request) {
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(request.getRefreshToken())
+                .orElseThrow(() -> new RuntimeException(
+                        "Refresh token not found"
+                )
+                );
+        if (refreshToken.getRevoked()){
+            throw new RuntimeException(
+                    "Refresh token already revoked"
+            );
+        }
+        refreshToken.setRevoked(true);
+        refreshTokenRepository.save(refreshToken);
 
+        return AuthResponse.builder()
+                .message("Logout successfully")
+                .build();
+    }
 }
