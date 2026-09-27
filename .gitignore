@@ -1,0 +1,38 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Maven
+target/
+**/target/
+.mvn/timing.properties
+**/.mvn/timing.properties
+
+# Backup folders created during repository cleanup
+.idea_backup/
+**/*_backup/
+**/*_backup_nested/
+**/*.local
+**/*.local_backup
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment and secret files
+.env
+.env.*
+!.env.example
+
+# Spring Boot local configuration
+application-local.yml
+application-local.yaml
+application-local.properties
+
+# Build output
+*.class

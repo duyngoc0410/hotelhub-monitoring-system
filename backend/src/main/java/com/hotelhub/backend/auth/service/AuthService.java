@@ -1,10 +1,9 @@
 package com.hotelhub.backend.auth.service;
 
+import com.hotelhub.backend.auth.dto.request.*;
 import com.hotelhub.backend.auth.dto.response.AuthResponse;
-import com.hotelhub.backend.auth.dto.request.CustomerLoginRequest;
-import com.hotelhub.backend.auth.dto.request.CustomerRegisterRequest;
-import com.hotelhub.backend.auth.dto.request.ManagementLoginRequest;
-import com.hotelhub.backend.auth.dto.request.OwnerRegisterRequest;
+import com.hotelhub.backend.auth.entity.RefreshToken;
+import com.hotelhub.backend.auth.repository.RefreshTokenRepository;
 import com.hotelhub.backend.common.constant.enums.RoleType;
 import com.hotelhub.backend.common.constant.enums.UserStatus;
 import com.hotelhub.backend.role.entity.Role;
@@ -19,6 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -26,6 +29,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final JwtService jwtService;
+    private final RefreshTokenRepository refreshTokenRepository;
     @Transactional
     public AuthResponse customerRegister(CustomerRegisterRequest request) {
 
@@ -131,7 +135,23 @@ public class AuthService {
         String refreshToken = jwtService.generateRefreshToken(
                 user,
                 "CUSTOMER"
+
         );
+        Date expiration = jwtService.extractExpiration(refreshToken);
+
+        RefreshToken refreshTokenEntity = RefreshToken.builder()
+                .token(refreshToken)
+                .expiryDate(
+                        expiration.toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime()
+                )
+                .revoked(false)
+                .user(user)
+                .build();
+
+        refreshTokenRepository.save(refreshTokenEntity);
+
 
         return AuthResponse.builder()
                 .message("Customer login successfully")
@@ -173,13 +193,114 @@ public class AuthService {
                         user,
                         "MANAGEMENT"
                 );
+        Date expiration = jwtService.extractExpiration(refreshToken);
 
+        RefreshToken refreshTokenEntity = RefreshToken.builder()
+                .token(refreshToken)
+                .expiryDate(
+                        expiration.toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime()
+                )
+                .revoked(false)
+                .user(user)
+                .build();
+
+        refreshTokenRepository.save(refreshTokenEntity);
         return AuthResponse.builder()
                 .message("Management login successfully")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .build();
+    }
+    @Transactional
+    public AuthResponse refreshToken(RefreshTokenRequest request) {
+
+        RefreshToken refreshToken = refreshTokenRepository
+                .findByToken(request.getRefreshToken()
+
+                )
+
+                .orElseThrow(() ->
+                        new RuntimeException("Refresh token not found")
+                );
+        //2. kiem tra revoked
+        if (refreshToken.getRevoked()){
+            throw new RuntimeException(
+                    "Refresh token has been revoked"
+            );
+        }
+        // kiem tra het han
+        if (refreshToken.getExpiryDate().isBefore(LocalDateTime.now())){
+            throw new RuntimeException(
+                    "Refresh token has expired"
+            );
+        }
+        // Lấy User sở hữu refresh token
+        User user = refreshToken.getUser();
+        if (user == null){
+            throw new RuntimeException(
+                    "Refresh token user not found"
+            );
+        }
+        // lay thong tin tu JWT
+        String username = jwtService.extractUsername(
+                request.getRefreshToken()
+        );
+        String loginType = jwtService.extractLoginType(
+                request.getRefreshToken()
+        );
+        // kiem tra Refresh token thuoc dung user
+        if ("CUSTOMER".equals(loginType)){
+            if (!user.getEmail().equals(username)){
+                throw new RuntimeException(
+                        "Refresh token does not belong to user"
+                );
+            }
+        } else if ("MANAGEMENT".equals(loginType)){
+            if (!user.getCccdNumber().equals(username)){
+                throw new RuntimeException(
+                        "Refresh token does not belong to user "
+                );
+            }else {
+                throw new RuntimeException(
+                        "Invalid refresh token login type"
+                );
+            }
+
+            // Bước 4 sẽ tạo Access Token mới ở đây
+        }
+        // 7. Tạo Access Token mới
+        String accessToken;
+
+        if ("CUSTOMER".equals(loginType)) {
+
+            accessToken = jwtService.generateAccessToken(
+                    user,
+                    "CUSTOMER"
+            );
+
+        } else if ("MANAGEMENT".equals(loginType)) {
+
+            accessToken = jwtService.generateAccessToken(
+                    user,
+                    "MANAGEMENT"
+            );
+
+        } else {
+            throw new RuntimeException(
+                    "Invalid refresh token login type"
+            );
+        }
+        // Trả kết quả
+        return AuthResponse.builder()
+                .message("Token refreshed successfully")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken.getToken())
+                .tokenType("Bearer")
+                .build();
+
     }
 
 }

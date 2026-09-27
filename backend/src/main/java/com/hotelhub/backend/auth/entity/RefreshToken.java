@@ -33,6 +33,7 @@ public class RefreshToken extends BaseEntity {
     @Column(nullable = false)
     private Boolean revoked = false;
     // chu so huu
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_id",
