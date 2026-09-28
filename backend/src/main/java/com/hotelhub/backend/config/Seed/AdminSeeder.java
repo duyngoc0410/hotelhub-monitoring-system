@@ -24,25 +24,27 @@ public class AdminSeeder {
 
     @Transactional
     public void seed() {
-        String adminEmail = "admin@hotelhub.com";
+        String adminCccd = "000000000001";
 
-        if (userRepository.existsByEmail(adminEmail)) {
+        if (userRepository.existsByCccdNumber(adminCccd)) {
             return;
         }
 
         Role adminRole = roleRepository.findByName(RoleType.ADMIN)
-                .orElseThrow(() -> new IllegalStateException("ADMIN role not found"));
+                .orElseThrow(() ->
+                        new IllegalStateException("ADMIN role not found")
+                );
 
         User admin = User.builder()
                 .fullName("System Administrator")
-                .email(adminEmail)
+                .cccdNumber(adminCccd)
+                .email("admin@hotelhub.com")
                 .passwordHash(passwordEncoder.encode("Admin@123"))
                 .phoneNumber("0000000000")
                 .gender(Gender.OTHER)
                 .userStatus(UserStatus.ACTIVE)
                 .role(adminRole)
                 .build();
-
         userRepository.save(admin);
 
     }
